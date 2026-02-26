@@ -14,31 +14,31 @@ This query analyzes the 'ipl_2025_deliveries' table to produce a batting scoreca
 
 Most cricket fans and analysts judge a batter purely by total runs scored — the bigger the number, the better the player. But that view is incomplete and often unfair.
 
-Consider a lower-middle-order batter who comes in at No. 6 or No. 7. They face fewer balls per innings by design, so their total run tally will naturally be lower than an opener who bats for 15–18 overs. Ranking players only by total runs penalizes these players despite them being highly efficient and match-impactful.
+Consider a lower-middle-order batter who comes in at No. 6 or No. 7. They face fewer balls per innings by design, so their total run tally will naturally be lower than an opener who bats longer. Ranking players only by total runs penalizes these players despite them being efficient and impactful innings.
 
-This query fixes that by applying a **three-dimensional filter**:
+This query fixes that by applying a three filter:
 
-- ✅ **Average > 30** — the batter scores consistently and doesn't throw their wicket away cheaply
-- ✅ **Matches played > 10** — the performance is sustained across the tournament, not a one-match flash
-- ✅ **Total score > 300** — ensures the batter has made a meaningful run contribution overall
+- Average > 30 — the batter scores consistently and doesn't throw their wicket away cheaply
+- Matches played > 10 — the performance is sustained across the tournament, not a one-match flash
+- Total score > 300 — ensures the batter has made a meaningful run contribution overall
 
-Together, these three conditions surface players who are **consistent, durable, and efficient** — not just those who happened to bat at the top of the order for every game.
+Together, these three conditions can find players who are consistent, durable, and efficient, not just those who happened to bat at the top of the order for every game.
 
-### 🏟️ Real-World Application: IPL Auction Strategy
+# Real-World Application: IPL Auction Strategy
 
-This analysis is directly useful for **franchise decision-making at the IPL auction**. Teams often overpay for high-profile names with big total run tallies, while undervaluing players who:
+This analysis is directly useful for franchise decision making at the IPL auction. Teams often overpay for high-profile names with big total run tallies, while undervaluing players who:
 
 - Bat in tough lower-order positions
 - Maintain excellent averages under pressure
 - Contribute across many matches without being the headline act
 
-By identifying these under-the-radar performers, franchises can make **smarter, value-driven investments** — picking up quality players before rival teams recognize their worth.
+By identifying these under-the-radar performers, franchises can make smarter, value-driven investments — picking up quality players before rival teams recognize their worth.
 
 ---
 
-## 🗄️ Dataset
+# Dataset from kaggle
 
-**Table:** `ipl_2025_deliveries`
+Table: `ipl_2025_deliveries`
 
 | Column | Description |
 |---|---|
