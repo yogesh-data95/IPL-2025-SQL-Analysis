@@ -1,119 +1,140 @@
-# IPL 2025 SQL Data Analysis Project
+# IPL 2025 Batting Statistics Analysis
 
-#Overview
-This project analyzes **IPL 2025 ball-by-ball delivery data** using SQL to extract
-meaningful cricket insights such as top run scorers, batting averages, highest scores,
-and player consistency throughout the tournament.
+I was watching IPL 2025 and got curious about which players were actually performing well beyond just the orange cap holder. I did this SQL-based analysis project that computes key batting performance metrics for IPL 2025 players using ball-by-ball delivery data which taken from kaggle. Here are some findings you can see and suggetion is always welcome.
 
 ---
 
-#Dataset
-- Source: IPL 2025 Ball by Ball Deliveries Dataset
-- Tool Used: MySQL / MySQL Workbench
-- Table Name:`ipl_2025_deliveries`
-- Key Columns:`striker`, `match_id`, `runs_of_bat`, `player_dismissed`
+# Overview
+
+This query analyzes the 'ipl_2025_deliveries' table to produce a batting scorecard for top-performing batters in the tournament. It filters for players who meet a minimum performance threshold, making it useful for identifying consistent and high-impact batters.
 
 ---
 
-# SQL Concepts Used
-- CTE (Common Table Expressions) — WITH clause
-- Aggregate Functions — SUM, MAX, COUNT, ROUND
-- CASE WHEN statements
-- GROUP BY and HAVING filters
-- Subquery logic for cricket-specific average calculation
+# Why This Query Matters
+
+Most cricket fans and analysts judge a batter purely by total runs scored — the bigger the number, the better the player. But that view is incomplete and often unfair.
+
+Consider a lower-middle-order batter who comes in at No. 6 or No. 7. They face fewer balls per innings by design, so their total run tally will naturally be lower than an opener who bats for 15–18 overs. Ranking players only by total runs penalizes these players despite them being highly efficient and match-impactful.
+
+This query fixes that by applying a **three-dimensional filter**:
+
+- ✅ **Average > 30** — the batter scores consistently and doesn't throw their wicket away cheaply
+- ✅ **Matches played > 10** — the performance is sustained across the tournament, not a one-match flash
+- ✅ **Total score > 300** — ensures the batter has made a meaningful run contribution overall
+
+Together, these three conditions surface players who are **consistent, durable, and efficient** — not just those who happened to bat at the top of the order for every game.
+
+### 🏟️ Real-World Application: IPL Auction Strategy
+
+This analysis is directly useful for **franchise decision-making at the IPL auction**. Teams often overpay for high-profile names with big total run tallies, while undervaluing players who:
+
+- Bat in tough lower-order positions
+- Maintain excellent averages under pressure
+- Contribute across many matches without being the headline act
+
+By identifying these under-the-radar performers, franchises can make **smarter, value-driven investments** — picking up quality players before rival teams recognize their worth.
 
 ---
 
-# Analysis 1: Top 5 Highest Run Scorers
+## 🗄️ Dataset
 
-# Business Question
-Who are the top 5 batsmen by total runs scored in IPL 2025, and what are their batting averages, highest scores, and matches played?
+**Table:** `ipl_2025_deliveries`
 
-# Approach
-- Used CTE to calculate runs per player per match
-- Applied cricket batting average logic — average = total runs / times out - first i have made mistake that i have taken total match played by the player and later reliased my
-  mistake (then not out innings are NOT counted in average denominator)
-- Used CASE WHEN to identify whether a batsman got out in each match
+| Column | Description |
+|---|---|
+| `striker` | Batter facing the delivery |
+| `match_id` | Unique identifier for each match |
+| `runs_of_bat` | Runs scored off the bat on that delivery |
+| `player_dismissed` | Name of the player dismissed (if any) on that delivery |
 
-# Query
+---
+
+## 📊 Output Columns
+
+| Column | Description |
+|---|---|
+| `striker` | Batter's name |
+| `total_score` | Total runs scored across all matches |
+| `highest_score` | Best individual innings score |
+| `match_played` | Number of matches played |
+| `average` | Batting average (total runs / times dismissed); `NULL` if never dismissed |
+
+---
+
+## 🔍 How It Works
+
+The query runs in two stages using a Common Table Expression (CTE):
+
+**Stage 1 — `match1` CTE**
+
+For each batter per match, it calculates:
+- `run_per_match` — runs scored in that match
+- `player_out` — whether the batter was dismissed (1 = out, 0 = not out)
+
+**Stage 2 — Aggregation**
+
+Aggregates across all matches to compute career-level stats, then filters using `HAVING`:
+
 ```sql
-WITH match1 AS (
-    SELECT 
-        striker, match_id,
-        SUM(runs_of_bat) AS run_per_match,
-        MAX(CASE WHEN player_dismissed = striker 
-            THEN 1 ELSE 0 END) AS player_out
-    FROM ipl_2025_deliveries
-    GROUP BY striker, match_id)
-
-SELECT 
-    striker,
-    SUM(run_per_match) AS total_score,
-    MAX(run_per_match) AS highest_score,
-    COUNT(match_id) AS match_played,
-    CASE 
-        WHEN SUM(player_out) = 0 THEN NULL 
-        ELSE ROUND(SUM(run_per_match) / SUM(player_out), 2) 
-    END AS average
-FROM match1
-GROUP BY striker
-ORDER BY total_score DESC
-LIMIT 5;
+match_played > 10    -- played in more than 10 matches
+total_score > 300    -- scored more than 300 runs total
+average > 30         -- batting average above 30
 ```
 
-# Result
-
-| Striker | Total Score | Highest Score | Match Played | Average |
-|---------|------------|---------------|--------------|---------|
-| Sai Sudharsan | 759 | 108 | 15 | 54.21 |
-| Suryakumar Yadav | 717 | 73 | 16 | 65.18 |
-| Kohli | 657 | 73 | 15 | 54.75 |
-| Shubman Gill | 650 | 93 | 15 | 54.17 |
-| Mitchell Marsh | 627 | 117 | 13 | 48.23 |
-
-# Key Insights
-- Sai Sudharsan topped the run charts with 759 runs in just 15 matches showing exceptional consistency throughout IPL 2025
-  
-- Suryakumar Yadav had the highest average of 65.18 among top 5, making him the most consistent performer relative to dismissals
-  
-- Mitchell Marsh scored the **highest individual innings of 117 among the top 5 batsmen
-
-- All top 5 batsmen maintained averages above 48 — showing that the best run scorers were also the most consistent players
-  
-- Suryakumar Yadav scored 717 runs in 16 matches compared to Sudharsan's 759 in 15 — very close competition at the top
+Results are sorted by `total_score` in descending order.
 
 ---
 
-# What Makes This Analysis Special
+## 💡 Key SQL Concepts Used
 
-Most people calculate batting average as total runs divided by matches played. However real cricket average only counts innings where the batsman got out.
-Not out innings are excluded from the denominator.
-
-This project correctly implements cricket batting average logic using SQL CASE WHEN statements — making the analysis statistically accurat and professionally meaningful.
-
----
-
-# How to Run This Project
-
-1. Download the IPL 2025 deliveries dataset from Kaggle
-2. Import CSV into MySQL using MySQL Workbench
-3. Run queries from `ipl_analysis.sql` file
-4. View results in Result Grid
+- **CTE (`WITH` clause)** — breaks the logic into readable stages
+- **Conditional aggregation** — `MAX(CASE WHEN ...)` to detect dismissals per innings
+- **`HAVING` clause** — filters on aggregated values post-grouping
+- **`NULLIF`-style guard** — avoids division by zero for not-out batters
 
 ---
 
-## More Analysis Coming Soon
-- Bowling Analysis — Top wicket takers, economy rates
-- Team Performance — Best powerplay teams, win percentages
-- Match Analysis — Highest scoring matches, toss impact
-- Powerplay vs Death Overs — Player performance by phase
+## 🚀 Usage
+
+Run the query against any SQL engine (MySQL, PostgreSQL, BigQuery, etc.) with access to the `ipl_2025_deliveries` table:
+
+```sql
+WITH match1 AS (
+  SELECT
+    striker,
+    match_id,
+    SUM(runs_of_bat) AS run_per_match,
+    MAX(CASE WHEN player_dismissed = striker THEN 1 ELSE 0 END) AS player_out
+  FROM ipl_2025_deliveries
+  GROUP BY striker, match_id
+)
+SELECT
+  striker,
+  SUM(run_per_match) AS total_score,
+  MAX(run_per_match) AS highest_score,
+  COUNT(match_id) AS match_played,
+  CASE
+    WHEN SUM(player_out) = 0 THEN NULL
+    ELSE ROUND(SUM(run_per_match) / SUM(player_out), 2)
+  END AS average
+FROM match1
+GROUP BY striker
+HAVING match_played > 10
+  AND total_score > 300
+  AND average > 30
+ORDER BY total_score DESC;
+```
 
 ---
 
-## Connect With Me
-- GitHub: github.com/yogesh-data95
-- Email: yogesh.kabdal95@gmail.com
-- LinkedIn: www.linkedin.com/in/yogesh-kabdal-5b880ba6
+## 📁 Project Structure
 
+```
+ipl-2025-analysis/
+│
+├── README.md
+└── batting_stats.sql       # Main query file
+```
 
-*Open to freelance SQL and Data Analysis projects!*
+📜 License
+MIT License
