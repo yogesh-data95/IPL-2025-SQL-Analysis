@@ -49,7 +49,7 @@ Table: `ipl_2025_deliveries`
 
 ---
 
-## 📊 Output Columns
+# Output Columns
 
 | Column | Description |
 |---|---|
@@ -61,17 +61,17 @@ Table: `ipl_2025_deliveries`
 
 ---
 
-## 🔍 How It Works
+# How It Works
 
 The query runs in two stages using a Common Table Expression (CTE):
 
-**Stage 1 — `match1` CTE**
+Stage 1 — `match1` CTE
 
 For each batter per match, it calculates:
 - `run_per_match` — runs scored in that match
 - `player_out` — whether the batter was dismissed (1 = out, 0 = not out)
 
-**Stage 2 — Aggregation**
+Stage 2 — Aggregation**
 
 Aggregates across all matches to compute career-level stats, then filters using `HAVING`:
 
@@ -85,16 +85,16 @@ Results are sorted by `total_score` in descending order.
 
 ---
 
-## 💡 Key SQL Concepts Used
+# Key SQL Concepts Used
 
-- **CTE (`WITH` clause)** — breaks the logic into readable stages
-- **Conditional aggregation** — `MAX(CASE WHEN ...)` to detect dismissals per innings
-- **`HAVING` clause** — filters on aggregated values post-grouping
-- **`NULLIF`-style guard** — avoids division by zero for not-out batters
+- CTE (`WITH` clause) — breaks the logic into readable stages
+- Conditional aggregation — `MAX(CASE WHEN ...)` to detect dismissals per innings
+- `HAVING` clause — filters on aggregated values post-grouping
+- `NULLIF`-style guard — avoids division by zero for not-out batters
 
 ---
 
-## 🚀 Usage
+# Usage
 
 Run the query against any SQL engine (MySQL, PostgreSQL, BigQuery, etc.) with access to the `ipl_2025_deliveries` table:
 
@@ -127,7 +127,7 @@ ORDER BY total_score DESC;
 
 ---
 
-## 📁 Project Structure
+#  Project Structure
 
 ```
 ipl-2025-analysis/
@@ -136,5 +136,5 @@ ipl-2025-analysis/
 └── batting_stats.sql       # Main query file
 ```
 
-📜 License
+License
 MIT License
