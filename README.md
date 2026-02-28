@@ -1,6 +1,6 @@
 # IPL 2025 Batting Statistics Analysis
 
-I was watching IPL 2025 and got curious about which players were actually performing well beyond just the orange cap holder. I did this SQL-based analysis project that computes key batting performance metrics for IPL 2025 players using ball-by-ball delivery data which taken from kaggle. Here are some findings you can see and suggetion is always welcome.
+I was watching IPL 2025 and got curious about which players were actually performing well beyond just the orange cap holder. I did this SQL-based analysis project that computes key batting performance metrics for IPL 2025 players using ball-by-ball delivery data which taken from kaggle. Here are some findings you can see and suggetion is always welcome. 
 
 ---
 
